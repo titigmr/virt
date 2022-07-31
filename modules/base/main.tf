@@ -38,8 +38,8 @@ resource "libvirt_network" "net" {
       for_each = {for n in range(var.number_host) : "${var.hostname}-${n}" => cidrhost(var.cidr, n + 10)}
 
       content {
-        hostname = hosts[each.key]
-        ip = hosts[each.value]
+        hostname = hosts.key
+        ip = hosts.value
       }
     }
 
