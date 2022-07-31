@@ -1,0 +1,4 @@
+
+variable "pool" {
+  default = "cluster"
+}
