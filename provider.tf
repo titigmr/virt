@@ -7,6 +7,9 @@ terraform {
   }
 }
 
+# Make sure add key in ssh agent
+# ssh-add ~/.ssh/id_rsa
+# or add "/system?keyfile=~/.ssh/id_rsa"
 provider "libvirt" {
     uri = "qemu+ssh://root@192.168.0.100/system"
 }
