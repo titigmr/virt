@@ -1,3 +1,3 @@
 output "ips" {
-  value = module.instance.ips
+  value = module.worker.ips
 }

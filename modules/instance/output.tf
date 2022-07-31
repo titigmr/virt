@@ -1,4 +1,6 @@
 
 output "ips" {
-  value = libvirt_domain.domain.*.network_interface.0.addresses
+  value = flatten([
+    for ip in libvirt_domain.domain : ip.network_interface.*.addresses
+  ])
 }

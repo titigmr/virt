@@ -19,8 +19,43 @@ resource "libvirt_pool" "pool" {
 
 ### NETWORK POOL
 
+resource "libvirt_network" "net" {
+  name = "${var.pool}"
+  mode = var.net_mode
+  domain = "${var.pool}.local"
+  addresses = [var.cidr]
+  autostart = true
 
+  dhcp {
+    enabled = var.enable_dhcp
+  }
 
+  dns {
+    enabled = var.enable_local_dns
+    local_only = false
+
+    dynamic "hosts" {
+      for_each = {for n in range(var.number_host) : "${var.hostname}-${n}" => cidrhost(var.cidr, n + 10)}
+
+      content {
+        hostname = hosts[each.key]
+        ip = hosts[each.value]
+      }
+    }
+
+    # (Optional) one or more DNS host entries.  Both of
+    # "ip" and "hostname" must be specified.  The format is:
+    # hosts  {
+    #     hostname = "my_hostname"
+    #     ip = "my.ip.address.1"
+    #   }
+    # hosts {
+    #     hostname = "my_hostname"
+    #     ip = "my.ip.address.2"
+    #   }
+    #
+  }
+}
 ### IMAGES
 
 # To prevent error: Permission denied
