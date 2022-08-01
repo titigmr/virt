@@ -9,8 +9,12 @@ terraform {
 
 ### INSTANCE
 
+locals {
+  entries = var.entries == null ? { for n in range(var.number_host) : "${var.hostname}-${n}" => null } : var.entries
+}
+
 resource "libvirt_domain" "domain" {
-  for_each =  toset([for n in range(var.number_host) : "${var.hostname}-${n}"])
+  for_each  = local.entries
   name      = each.key
   memory    = var.ram * 1024
   vcpu      = var.cpu
@@ -42,8 +46,8 @@ resource "libvirt_domain" "domain" {
   }
 
   network_interface {
-    network_name   = "default"
-    #addresses      = var.ip
+    network_name   = var.net
+    addresses      = each.value == null ? null : [each.value]
     wait_for_lease = true
   }
 
@@ -75,8 +79,8 @@ data "template_cloudinit_config" "config" {
 }
 
 resource "libvirt_cloudinit_disk" "init" {
-  name = "${var.hostname}-init.iso"
-  pool = var.pool
+  name      = "${var.hostname}-init.iso"
+  pool      = var.pool
   user_data = data.template_cloudinit_config.config.rendered
 }
 
@@ -85,7 +89,7 @@ resource "libvirt_cloudinit_disk" "init" {
 
 # INFO: size parameters is in bytes : 1Go(fr) = 1GB(en) = 1.074e+9 bytes = 1Gb * 8
 resource "libvirt_volume" "volume" {
-  for_each       =  toset([for n in range(var.number_host) : "${var.hostname}-${n}"])
+  for_each       = toset([for n in range(var.number_host) : "${var.hostname}-${n}"])
   name           = "${each.key}-volume"
   base_volume_id = var.image_id
   pool           = var.pool

@@ -9,6 +9,11 @@ terraform {
 
 ### VOLUME POOL
 
+locals {
+  entries = var.net == "default" ? null : {
+  for n in range(var.number_host) : "${var.hostname}-${n}" => cidrhost(var.net_config.cidr, n + 10) }
+}
+
 
 resource "libvirt_pool" "pool" {
   name = var.pool
@@ -20,42 +25,44 @@ resource "libvirt_pool" "pool" {
 ### NETWORK POOL
 
 resource "libvirt_network" "net" {
-  name = "${var.pool}"
-  mode = var.net_mode
-  domain = "${var.pool}.local"
-  addresses = [var.cidr]
+  count     = var.net == "default" ? 0 : 1
+  name      = var.pool
+  mode      = var.net_config.net_mode
+  domain    = "${var.pool}.local"
+  addresses = [var.net_config.cidr]
   autostart = true
 
   dhcp {
-    enabled = var.enable_dhcp
+    enabled = var.net_config.enable_dhcp
   }
 
   dns {
-    enabled = var.enable_local_dns
+    enabled    = var.net_config.enable_local_dns
     local_only = false
 
     dynamic "hosts" {
-      for_each = {for n in range(var.number_host) : "${var.hostname}-${n}" => cidrhost(var.cidr, n + 10)}
+      for_each = local.entries
 
       content {
         hostname = hosts.key
-        ip = hosts.value
+        ip       = hosts.value
       }
     }
 
     # (Optional) one or more DNS host entries.  Both of
     # "ip" and "hostname" must be specified.  The format is:
     # hosts  {
-    #     hostname = "my_hostname"
-    #     ip = "my.ip.address.1"
+    #     hostname = "hostname"
+    #     ip = "10.0.3.10"
     #   }
     # hosts {
-    #     hostname = "my_hostname"
-    #     ip = "my.ip.address.2"
+    #     hostname = "hostname2"
+    #     ip = "10.0.3.20"
     #   }
-    #
   }
 }
+
+
 ### IMAGES
 
 # To prevent error: Permission denied

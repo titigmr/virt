@@ -4,29 +4,25 @@ variable "pool" {
 }
 
 variable "hostname" {
-    type =  string
+  type = string
 }
 
 variable "number_host" {
-    type = number
+  type = number
 }
 
-variable "net_mode" {
-    type = string
-    default = "nat"
-    description = "mode can be: 'nat' (default), 'none', 'route', 'open', 'bridge'"
+variable "net" {
+  default = "default"
 }
 
-variable "enable_dhcp" {
-    type = bool
-    default = false
-}
-
-variable "enable_local_dns" {
-    type = bool
-    default = false
-}
-
-variable "cidr" {
-    default = "10.0.3.0/24"
+variable "net_config" {
+  type = map(any)
+  default = {
+    net_mode         = "nat",
+    enable_dhcp      = true,
+    enable_local_dns = true,
+    cidr             = "10.0.3.0/24"
+  }
+  description = "mode can be: 'nat' (default), 'none', 'route', 'open', 'bridge'"
+  nullable    = true
 }
