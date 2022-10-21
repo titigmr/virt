@@ -2,3 +2,4 @@
 terraform*
 *.qcow2
 *.pub
+*.DS_Store

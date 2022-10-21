@@ -9,17 +9,14 @@ terraform {
 
 ### INSTANCE
 
-locals {
-  entries = var.entries == null ? { for n in range(var.number_host) : "${var.hostname}-${n}" => null } : var.entries
-}
 
 resource "libvirt_domain" "domain" {
-  for_each  = local.entries
-  name      = each.key
+  for_each  = toset(var.hostnames)
+  name      = "${var.project}-${var.instance}-${each.key}"
   memory    = var.ram * 1024
   vcpu      = var.cpu
   autostart = true
-  cloudinit = libvirt_cloudinit_disk.init.id
+  cloudinit = libvirt_cloudinit_disk.init[each.key].id
 
   cpu {
     mode = "host-passthrough"
@@ -45,10 +42,14 @@ resource "libvirt_domain" "domain" {
     target_port = "1"
   }
 
-  network_interface {
-    network_name   = var.net
-    addresses      = each.value == null ? null : [each.value]
-    wait_for_lease = true
+  dynamic "network_interface" {
+      for_each = toset(var.net)
+      content {
+        network_name   = network_interface.key != "external" ? network_interface.key : null
+        addresses      = null
+        wait_for_lease = network_interface.key != "external" ? true : null
+        macvtap        = network_interface.key == "external" ? "eno1" : null
+    }
   }
 
   # Enable VNC on localhost address
@@ -60,14 +61,16 @@ resource "libvirt_domain" "domain" {
 
 ### CLOUD-INIT
 
+
 data "template_cloudinit_config" "config" {
+  for_each      = toset(var.hostnames)
   gzip          = false
   base64_encode = false
 
   part {
     content_type = "text/cloud-config"
     content = templatefile("${path.root}/../config/cloud-init.yaml",
-      {}
+      { HOSTNAME = "${var.project}-${var.instance}-${each.key}"}
     )
   }
 
@@ -79,9 +82,10 @@ data "template_cloudinit_config" "config" {
 }
 
 resource "libvirt_cloudinit_disk" "init" {
-  name      = "${var.hostname}-init.iso"
-  pool      = var.pool
-  user_data = data.template_cloudinit_config.config.rendered
+  for_each  = toset(var.hostnames)
+  name      = "${var.project}-${var.instance}-${each.key}-init.iso"
+  pool      = var.storage
+  user_data = data.template_cloudinit_config.config[each.key].rendered
 }
 
 
@@ -89,9 +93,9 @@ resource "libvirt_cloudinit_disk" "init" {
 
 # INFO: size parameters is in bytes : 1Go(fr) = 1GB(en) = 1.074e+9 bytes = 1Gb * 8
 resource "libvirt_volume" "volume" {
-  for_each       = toset([for n in range(var.number_host) : "${var.hostname}-${n}"])
-  name           = "${each.key}-volume"
+  for_each       = toset(var.hostnames)
+  name           = "${var.project}-${var.instance}-${each.key}-volume"
   base_volume_id = var.image_id
-  pool           = var.pool
+  pool           = var.storage
   size           = var.volume_size * 1.074e+9
 }

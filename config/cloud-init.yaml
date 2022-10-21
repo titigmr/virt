@@ -1,4 +1,5 @@
 #cloud-config
+hostname: ${HOSTNAME}
 disable_root: false
 ssh_pwauth: true
 package_update: true

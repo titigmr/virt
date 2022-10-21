@@ -1,3 +1,4 @@
-variable "project" {
+
+variable "pool" {
   default = "cluster"
 }
