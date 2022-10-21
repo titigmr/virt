@@ -1,0 +1,26 @@
+
+project = "k8s"
+
+network_name             = "k8s"
+network_net_mode         = "nat"
+network_enable_dhcp      = true
+network_enable_local_dns = true
+network_cidr             = "10.0.3.0/24"
+
+master_instance    = "master"
+master_hostnames   = ["1"]
+master_ram         = 2
+master_cpu         = 2
+master_volume_size = 10
+
+worker_instance    = "worker"
+worker_hostnames   = ["1", "2", "3"]
+worker_ram         = 4
+worker_cpu         = 4
+worker_volume_size = 500
+
+lb_instance    = "lb"
+lb_hostnames   = ["app", "admin"]
+lb_ram         = 1
+lb_cpu         = 1
+lb_volume_size = 10

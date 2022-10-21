@@ -1,5 +1,7 @@
 .terraform*
-terraform*
+terraform.tfstate*
+terraform.tfvars
+*.zip
 *.qcow2
 *.pub
 *.DS_Store
