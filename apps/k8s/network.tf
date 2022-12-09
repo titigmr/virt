@@ -1,14 +1,15 @@
 module "network" {
   source           = "../modules/network"
-  net              = var.network_name
+  domain           = var.network_domain
   net_mode         = var.network_net_mode
   enable_dhcp      = var.network_enable_dhcp
   enable_local_dns = var.network_enable_local_dns
   cidr             = var.network_cidr
 }
 
-variable "network_name" {
+variable "network_domain" {
   default = "k8s"
+  description = "choose a name, or `external` for macvtap network"
 }
 
 variable "network_net_mode" {

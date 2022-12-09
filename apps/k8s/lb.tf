@@ -7,9 +7,10 @@ module "lb" {
   ram         = var.lb_ram
   cpu         = var.lb_cpu
   volume_size = var.lb_volume_size
-  net         = [module.network.net, "external"]
+  domain      = [module.network.domain, "external"]
   storage     = module.storage.pool
   image_id    = module.storage.image_id
+  app_script  = var.lb_app_script
   depends_on = [
     module.network,
     module.storage
@@ -41,3 +42,5 @@ variable "lb_volume_size" {
   type    = number
   default = 10
 }
+
+variable "lb_app_script" {}

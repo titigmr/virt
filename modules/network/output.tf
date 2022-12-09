@@ -1,3 +1,3 @@
-output "net" {
-  value = var.net
+output "domain" {
+  value = var.domain
 }

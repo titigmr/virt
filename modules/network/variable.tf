@@ -1,4 +1,5 @@
-variable "net" {
+
+variable "domain" {
   default = "default"
 }
 

@@ -11,10 +11,10 @@ terraform {
 ### Networks
 
 resource "libvirt_network" "net" {
-  count     = var.net == "default" ? 0 : 1
-  name      = var.net
+  count     = var.domain == "default" ? 0 : 1
+  name      = var.domain
   mode      = var.net_mode
-  domain    = "${var.net}.local"
+  domain    = "${var.domain}.local"
   addresses = [var.cidr] 
   autostart = true
 

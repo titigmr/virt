@@ -25,6 +25,6 @@ resource "libvirt_pool" "pool" {
 
 resource "libvirt_volume" "image" {
   name   = "debian-11"
-  source = "${path.root}/../image/debian-11-generic-amd64.qcow2"
+  source = "${path.root}/../../image/debian-11-generic-amd64.qcow2"
   #source = "https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-generic-amd64.qcow2"
 }

@@ -7,7 +7,7 @@ module "master" {
   ram         = var.master_ram
   cpu         = var.master_cpu
   volume_size = var.master_volume_size
-  net         = [module.network.net]
+  domain      = [module.network.domain]
   storage     = module.storage.pool
   image_id    = module.storage.image_id
   depends_on = [

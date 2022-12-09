@@ -7,7 +7,6 @@ terraform {
   }
 }
 
-### INSTANCE
 
 
 resource "libvirt_domain" "domain" {
@@ -43,7 +42,7 @@ resource "libvirt_domain" "domain" {
   }
 
   dynamic "network_interface" {
-      for_each = toset(var.net)
+      for_each = toset(var.domain)
       content {
         network_name   = network_interface.key != "external" ? network_interface.key : null
         addresses      = null
@@ -52,14 +51,20 @@ resource "libvirt_domain" "domain" {
     }
   }
 
-  # Enable VNC on localhost address
   graphics {
     type        = "vnc"
     listen_type = "address"
   }
 }
 
+
 ### CLOUD-INIT
+
+locals {
+  app_script =  "${path.root}/../../app-scripts/${var.app_script}"
+  app_noscript =  "${path.root}/../../app-scripts/nohup.sh"
+  script = fileexists(local.app_script) ? local.app_script :  local.app_noscript
+}
 
 
 data "template_cloudinit_config" "config" {
@@ -69,17 +74,23 @@ data "template_cloudinit_config" "config" {
 
   part {
     content_type = "text/cloud-config"
-    content = templatefile("${path.root}/../config/cloud-init.yaml",
+    content = templatefile("${path.root}/../../config/cloud-init.yaml",
       { HOSTNAME = "${var.project}-${var.instance}-${each.key}"}
     )
   }
 
   part {
     content_type = "text/plain"
-    content = templatefile("${path.root}/../config/noop.sh",
-    { VERSION = "v1.0" })
+    content = templatefile("${path.root}/../../config/env.sh",
+    { ENVIRONMENT = jsonencode(var.env) })
+  }
+
+  part {
+    content_type = "text/plain"
+    content = templatefile(local.script, var.app_env)
   }
 }
+
 
 resource "libvirt_cloudinit_disk" "init" {
   for_each  = toset(var.hostnames)
@@ -91,7 +102,7 @@ resource "libvirt_cloudinit_disk" "init" {
 
 ### VOLUME
 
-# INFO: size parameters is in bytes : 1Go(fr) = 1GB(en) = 1.074e+9 bytes = 1Gb * 8
+# INFO: size parameters is in bytes (octets in french): 1Go(fr) = 1GB(en) = 1.074e+9 bytes = 1Gb (gigabits) * 8
 resource "libvirt_volume" "volume" {
   for_each       = toset(var.hostnames)
   name           = "${var.project}-${var.instance}-${each.key}-volume"

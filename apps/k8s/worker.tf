@@ -7,7 +7,7 @@ module "worker" {
   ram         = var.worker_ram
   cpu         = var.worker_cpu
   volume_size = var.worker_volume_size
-  net         = [module.network.net]
+  domain      = [module.network.domain]
   storage     = module.storage.pool
   image_id    = module.storage.image_id
   depends_on = [

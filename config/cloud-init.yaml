@@ -4,7 +4,6 @@ disable_root: false
 ssh_pwauth: true
 package_update: true
 packages:
-  - docker.io
   - vim
   - jq
   - curl
