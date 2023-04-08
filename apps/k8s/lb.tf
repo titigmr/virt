@@ -1,6 +1,6 @@
 
 module "lb" {
-  source      = "../modules/instance"
+  source      = "../../modules/instance"
   project     = var.project
   instance    = var.lb_instance
   hostnames   = var.lb_hostnames

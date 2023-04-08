@@ -1,6 +1,6 @@
 
 module "worker" {
-  source      = "../modules/instance"
+  source      = "../../modules/instance"
   project     = var.project
   instance    = var.worker_instance
   hostnames   = var.worker_hostnames

@@ -2,7 +2,7 @@ terraform {
   required_providers {
     libvirt = {
       source  = "dmacvicar/libvirt"
-      version = "0.6.14"
+      version = "0.7.1"
     }
   }
 }
@@ -16,7 +16,7 @@ resource "libvirt_domain" "domain" {
   vcpu      = var.cpu
   autostart = true
   cloudinit = libvirt_cloudinit_disk.init[each.key].id
-
+  qemu_agent = true
   cpu {
     mode = "host-passthrough"
   }
@@ -46,7 +46,7 @@ resource "libvirt_domain" "domain" {
       content {
         network_name   = network_interface.key != "external" ? network_interface.key : null
         addresses      = null
-        wait_for_lease = network_interface.key != "external" ? true : null
+        wait_for_lease = true #network_interface.key != "external" ? true : null
         macvtap        = network_interface.key == "external" ? "eno1" : null
     }
   }

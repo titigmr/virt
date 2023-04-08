@@ -1,5 +1,5 @@
 
 module "storage" {
-  source = "../modules/storage"
+  source = "../../modules/storage"
   pool   = var.project
 }

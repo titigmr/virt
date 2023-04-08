@@ -14,6 +14,7 @@ users:
   - name: debian
     sudo: ALL=(ALL) NOPASSWD:ALL
     shell: /bin/bash
+    passwd: '$1$QOC9yL8J$/Qmip/cG0/snuxfwJsQqN1'
     ssh-authorized-keys:
       - ${file("id_rsa.pub")}
     groups: docker

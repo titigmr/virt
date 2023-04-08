@@ -2,7 +2,7 @@ terraform {
   required_providers {
     libvirt = {
       source  = "dmacvicar/libvirt"
-      version = "0.6.14"
+      version = "0.7.1"
     }
   }
 }
@@ -17,7 +17,6 @@ resource "libvirt_network" "net" {
   domain    = "${var.domain}.local"
   addresses = [var.cidr] 
   autostart = true
-
   dhcp {
     enabled = var.enable_dhcp
   }

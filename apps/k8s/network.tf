@@ -1,5 +1,5 @@
 module "network" {
-  source           = "../modules/network"
+  source           = "../../modules/network"
   domain           = var.network_domain
   net_mode         = var.network_net_mode
   enable_dhcp      = var.network_enable_dhcp
