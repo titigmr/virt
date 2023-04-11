@@ -10,9 +10,12 @@ module "worker" {
   domain      = [module.network.domain]
   storage     = module.storage.pool
   image_id    = module.storage.image_id
+  app_script  = "kube.sh"
+  app_env     = { "MASTER_IP" = "${module.master.ips[0]}", "TOKEN" = "L6wEUEn0FvHLrB5tExFv8JtGjrnxfFh6" }
   depends_on = [
     module.network,
-    module.storage
+    module.storage,
+    module.master
   ]
 }
 

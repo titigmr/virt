@@ -10,6 +10,8 @@ module "master" {
   domain      = [module.network.domain]
   storage     = module.storage.pool
   image_id    = module.storage.image_id
+  app_env     = { "TOKEN" = "L6wEUEn0FvHLrB5tExFv8JtGjrnxfFh6" , "MASTER_IP" = ""}
+  app_script  = "kube.sh"
   depends_on = [
     module.network,
     module.storage

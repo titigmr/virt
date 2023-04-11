@@ -13,7 +13,8 @@ module "lb" {
   app_script  = var.lb_app_script
   depends_on = [
     module.network,
-    module.storage
+    module.storage,
+    module.worker
   ]
 }
 

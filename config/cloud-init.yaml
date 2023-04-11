@@ -4,6 +4,7 @@ disable_root: false
 ssh_pwauth: true
 package_update: true
 packages:
+  - qemu-guest-agent
   - vim
   - jq
   - curl
@@ -18,6 +19,8 @@ users:
     ssh-authorized-keys:
       - ${file("id_rsa.pub")}
     groups: docker
+runcmd:
+  - systemctl start qemu-guest-agent
 growpart:
   mode: auto
   devices: ['/']
